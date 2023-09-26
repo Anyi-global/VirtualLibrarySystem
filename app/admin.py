@@ -29,7 +29,7 @@ def admin():
 @login_required
 def admin_dashboard():
     
-    users = mongo.db.sign_up.find({}, {"_id": 0, "user_type": 1, "first_name": 1, "middle_name": 1, "last_name": 1, "matric_number": 1, "email": 1, "activation_status": 1, "signUp_date": 1})
+    users = mongo.db.signup.find({}, {"_id": 0, "username": 1, "email": 1, "registeredDate": 1})
     
     return render_template("admin/admin_dashboard.html", users=users)
 
@@ -42,24 +42,23 @@ def add_student():
     if request.method == 'POST':
         req = request.form
         
-        name = req["name"]
-        mat_number = req["mat_no"]
+        fullname = req["name"]
+        username = req["username"]
         email = req["email"]
         reg_date = req["reg_date"]
         address = req["home_addr"]
         marital_status = req["marital_status"]
-        level = req["level"]
         gender = req["gender"]
         phone_number = req["phone_number"]
         dob = req["dob"]
         next_of_kin = req["next_of_kin"]
         state = req["state"]
         city = req["city"]
-        image = req["image"]
         
-        mongo.db.students.insert_one({"full_name": name, "mat_number": mat_number, "email": email, "reg_date": reg_date, "home_address": address, "marital_status": marital_status, "level": level, "gender": gender, "phone_number": phone_number, "date_of_birth": dob, "next_of_kin": next_of_kin, "state": state, "city": city, "image": image})
+        mongo.db.users.insert_one({"full_name": fullname, "username": username, "email": email, "reg_date": reg_date, "home_address": address, "marital_status": marital_status, "gender": gender, "phone_number": phone_number, "date_of_birth": dob, "next_of_kin": next_of_kin, "state": state, "city": city})
         
-        return redirect(url_for("admin_dashboard"))
+        flash("User Added Successfully!", "success")
+        return redirect(url_for("add_student"))
                 
     return render_template("admin/add_student.html")
 

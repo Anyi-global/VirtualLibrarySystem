@@ -9,8 +9,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
-        <!-- <img src="assets/img/fuo_logo1.png" alt=""> -->
-        <span class="d-none d-lg-block" style="font-family: 'Times New Roman', Times, serif; font-size: 30px; color: green;">CSI<span style="font-family: 'Times New Roman', Times, serif; font-style: italic;">SIS</span></span>
+        <img src="{{ url_for('static', filename='img/fuo logo1.png') }}" alt="FUO Logo" class="rounded-circle">
+        <span class="d-none d-lg-block" style="font-family: 'Times New Roman', Times, serif; font-size: 30px; color: green;">Virtual<span style="font-family: 'Times New Roman', Times, serif; font-style: italic;">Library</span></span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -25,12 +25,12 @@
     <nav class="header-nav ms-auto">
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="{{ url_for('static', filename='img/anyiglobal2.jpg') }}" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">Ike Ifeanyi</span>
+            <span class="d-none d-md-block dropdown-toggle ps-2">Onajite Alex</span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>Ike Ifeanyi</h6>
+              <h6>Onajite Alex</h6>
               <span>Web Designer</span>
             </li>
             <li>
@@ -68,7 +68,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="/">
+              <a class="dropdown-item d-flex align-items-center" href="/logout">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
               </a>
@@ -81,135 +81,86 @@
     </nav><!-- End Icons Navigation -->
 
   </header><!-- End Header -->
- <!-- ======= Sidebar ======= -->
- <aside id="sidebar" class="sidebar">
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
 
-  <ul class="sidebar-nav" id="sidebar-nav">
+    <ul class="sidebar-nav" id="sidebar-nav">
 
-    <li class="nav-item">
-      <a class="nav-link" href="#">
-        <i class="bi bi-grid-fill"></i>
-        <span>Dashboard</span>
-      </a>
-    </li><!-- End Dashboard Nav -->
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-grid-fill"></i>
+          <span>Dashboard</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
 
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-people-fill"></i><span>Students</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="/all-students-view">
-            <i class="bi bi-circle-fill"></i><span>All Students</span>
-          </a>
-        </li>
-        <li>
-          <a href="/add-student">
-            <i class="bi bi-circle-fill"></i><span>Add Student</span>
-          </a>
-        </li>
-        <li>
-          <a href="/all-added-students">
-            <i class="bi bi-circle-fill"></i><span>Edit Student</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- End Components Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-people-fill"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/all-students-view">
+              <i class="bi bi-circle-fill"></i><span>All Users</span>
+            </a>
+          </li>
+          <li>
+            <a href="/add-student">
+              <i class="bi bi-circle-fill"></i><span>Add User</span>
+            </a>
+          </li>
+          <li>
+            <a href="/all-added-students">
+              <i class="bi bi-circle-fill"></i><span>Edit User</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- End Components Nav -->
 
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-person-fill"></i><span>Profile</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="admin_profile.html">
-            <i class="bi bi-circle-fill"></i><span>View Profile</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- End Forms Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person-fill"></i><span>Profile</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/admin/admin-profile">
+              <i class="bi bi-circle-fill"></i><span>View Profile</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- End Forms Nav -->
 
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-layout-text-window-reverse"></i><span>Courses</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="/all-courses">
-            <i class="bi bi-circle-fill"></i><span>All Courses</span>
-          </a>
-        </li>
-        <li>
-          <a href="/add-course">
-            <i class="bi bi-circle-fill"></i><span>Add Course</span>
-          </a>
-        </li>
-        <li>
-          <a href="/all-added-courses">
-            <i class="bi bi-circle-fill"></i><span>Edit Courses</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    
-
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-person-square"></i><span>Staff</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="/all-lecturer-view">
-            <i class="bi bi-circle-fill"></i><span>All Staff</span>
-          </a>
-        </li>
-        <li>
-          <a href="/add-lecturer">
-            <i class="bi bi-circle-fill"></i><span>Add Staff</span>
-          </a>
-        </li>
-        <li>
-          <a href="/all-added-staff">
-            <i class="bi bi-circle-fill"></i><span>Edit Staff</span>
-          </a>
-        </li>
-      </ul>
-    </li><!-- End Charts Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-calendar2-check-fill"></i><span>Course Form Download</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="/course-form-uploads">
-            <i class="bi bi-circle-fill"></i><span>All Course Forms</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- End Icons Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="/">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Sign Out</span>
-      </a>
-    </li><!-- End F.A.Q Page Nav -->
-  </ul>
-</aside><!-- End Sidebar-->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Book Search</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/book-search">
+              <i class="bi bi-circle-fill"></i><span>Search for books</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Sign Out</span>
+        </a>
+      </li><!-- End F.A.Q Page Nav -->
+    </ul>
+  </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
     <div class="pagetitle">
-      <h1>All Added Students</h1>
+      <h1>All Added Users</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-fill"></i><span>Home</span></a></li>
-          <li class="breadcrumb-item">Students</li>
-          <li class="breadcrumb-item active">All Added Students</li>
+          <li class="breadcrumb-item">Users</li>
+          <li class="breadcrumb-item active">All Added Users</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -246,21 +197,15 @@
                   <table class="table table-bordered table-striped table-hover table-checkable table-scrollable datatable">
                     <thead>
                       <tr>
-                        <th scope="col">Mat. No.</th>
-                        <th scope="col">Full_Name</th>
-                        <th scope="col">Course</th>
-                        <th scope="col">Level</th>
-                        <th scope="col">Academic Session</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
                         <th scope="col">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <th scope="row"><a href="/edit-student" class="text-primary">FUO/17/CSI/6633</a></th>
-                        <td class="text-primary">Ike Ifeanyi</td>
-                        <td><a href="#" class="text-primary">Computer Science and Informatics</a></td>
-                        <td class="text-primary">400</td>
-                        <td><span class="badge bg-success">2020/2021</span></td>
+                        <th scope="row"><a href="/edit-student" class="text-primary">Alex</a></th>
+                        <td class="text-primary">alexmoney@gmail.com</td>
                         <td><a href="#" class="btn btn-primary btn-xxs"><i class="bi bi-pencil"></i></a><br>
                         <button class="btn btn-danger btn-xxs"><i class="bi bi-trash"></i></button>
                         </td>

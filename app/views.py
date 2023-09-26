@@ -1,6 +1,6 @@
 from app import app, mongo
 
-from flask import render_template, request, url_for, redirect, flash, session
+from flask import render_template, request, url_for, redirect, flash, session, jsonify
 
 from werkzeug.utils import secure_filename
 
@@ -12,7 +12,7 @@ import bson.binary
 
 import urllib.request
 
-import os, re
+import os, re, requests
 
 import datetime
 
@@ -274,43 +274,54 @@ def upload_course_form():
 
 # app.config["SECRET_KEY"] = 'qOvd3CvKNglEYbhM1yFK0Q'
 
+@app.route('/book-search')
+def book_search():
+    return render_template('public/search_books.html')
+
+@app.route('/search', methods=['GET'])
+def search_books():
+    query = request.args.get('query')  # Get the search query from the request URL
+    api_key = 'AIzaSyDTps8-y1zrXCgZdYzfQnvYqB3rgJjSJ1k'
+
+    # Make a GET request to the Google Books API
+    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}'
+
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        # Extract and process the book data as needed
+        return jsonify(data)
+    else:
+        return jsonify({'error': 'Failed to fetch data from Google Books API'}), 500
+
 @app.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method=='POST':
         req = request.form
         
-        user_type = str(req["user_type"]).upper()
-        f_name = str(req["f_name"]).upper()
-        m_name = str(req["m_name"]).upper()
-        l_name = str(req["l_name"]).upper()
-        mat_no = str(req["mat_no"]).upper()
+        username = str(req["username"])
         email = str(req["email"]).lower()
         password = req["pswd"]
         con_password = req["con_pswd"]
         
-        matric_number = mat_no.split('/')
+        # matric_number = mat_no.split('/')
         
         if password != con_password:
             flash("Password Confirmation Mismatched, Please Confirm Your Password!", "danger")
             return render_template("public/register.html")
-        elif matric_number[2] != 'CSI':
-            flash("Sorry, Wrong matric number format!", "danger")
-            return render_template("public/register.html")
-        elif matric_number[0] != 'FUO':
-            flash("Sorry, Wrong matric number format!", "danger")
-            return render_template("public/register.html")
         # checkuser = mongo.db.sign_up.find_one({"matric_number":mat_no}, {"_id":0})
-        checkuser = mongo.db.sign_up.find_one({mat_no:{"$exists":True}}, {"_id":0})
+        checkuser = mongo.db.signup.find_one({username:{"$exists":True}}, {"_id":0})
         if checkuser:
             flash("Sorry, User already registered!", "danger")
             return render_template("public/register.html")
         # checkemail = mongo.db.sign_up.find_one({"email":email}, {"_id":0})
-        checkemail = mongo.db.sign_up.find_one({email:{"$exists":True}}, {"_id":0})
+        checkemail = mongo.db.signup.find_one({email:{"$exists":True}}, {"_id":0})
         if checkemail:
             flash("Sorry, User with email address already exists!", "danger")
             return render_template("public/register.html")
         
-        mongo.db.sign_up.insert_one({"user_type": user_type, "first_name": f_name, "middle_name": m_name, "last_name": l_name, "matric_number": mat_no, mat_no:mat_no, "email": email, email:email, "password": password, "activation_status":"0", "signUp_date": nigerian_time()})
+        mongo.db.signup.insert_one({"username": username, username:username, "email": email, email:email, "password": password, "activationStatus":"0", "registeredDate": nigerian_time()})
         flash("Account Created Successfully!", "success")
         return redirect(url_for("index"))
     else:
@@ -321,66 +332,101 @@ def login():
     if request.method=='POST':
         req = request.form
         
-        mat_no = str(req["mat_no"]).upper()
+        username = str(req["username"])
         pswd = req["pswd"]
         
         # checkuser = mongo.db.sign_up.find_one({"matric_number": mat_no})
-        checkuser = mongo.db.sign_up.find_one({mat_no:{"$exists":True}}, {"_id":0})
+        checkuser = mongo.db.signup.find_one({username:{"$exists":True}}, {"_id":0})
         
         # x = re.search(pattern, string)
         
         if not checkuser:
-            flash("Matric No./Password Incorrect!", "danger")
+            flash("Username/Password Incorrect!", "danger")
             return render_template("public/index.html")
         
-        elif checkuser["activation_status"] != "1":
-            flash("Account not activated. Contact Admin!", "danger")
+        elif checkuser["activationStatus"] != "1":
+            flash("Account not activated. Contact Admin for account activation!", "danger")
             return render_template("public/index.html")
         
         elif not pswd == checkuser["password"]:
-            flash("Matric No./Password Incorrect!", "danger")
+            flash("Username/Password Incorrect!", "danger")
             return render_template("public/index.html")
                   
         else:
             del checkuser["password"]
             session["user"] = checkuser
             session["login"]=True
-            if checkuser["user_type"] == "STUDENT":
-                flash("Logged in Successfully! Welcome to your Dashboard!!", "success")
-                return redirect(url_for("students_dashboard"))
-            
-            elif checkuser["user_type"] == "STAFF":
-                flash("Logged in Successfully! Welcome to your Dashboard!!", "success")
-                return redirect(url_for("staff_dashboard"))
-            
-            elif checkuser["user_type"] == "ADMIN":
+            if checkuser["username"] == "admin":
                 flash("Logged in Successfully! Welcome to your Dashboard!!", "success")
                 return redirect(url_for("admin_dashboard"))
+            
+            else:
+                flash("Logged in Successfully! Welcome to your Dashboard!!", "success")
+                return redirect(url_for("students_dashboard"))
     
     return render_template("public/index.html")
 
         
-@app.route("/edit_profile", methods=["POST"])
+@app.route("/edit-profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
-    req = request.form
+    if request.method=='POST':
+        req = request.form
+        print(req)
     
-    mat_no = str(req["mat_no"]).upper()
-    new_email = str(req["email"]).lower()
+        username = req["username"]
+        new_email = req["email"]
     
-    # checkuser = mongo.db.sign_up.find_one({"matric_number":mat_no}, {"_id":0})
-    checkuser = mongo.db.sign_up.find_one({mat_no:{"$exists":True}}, {"_id":0})
-    if not checkuser:
-        flash("Sorry, User not registered!", "danger")
-        return render_template("public/student_profile.html")
-    # checkemail = mongo.db.sign_up.find_one({"email":email}, {"_id":0})
-    checkemail = mongo.db.sign_up.find_one({new_email:{"$exists":True}}, {"_id":0})
-    if checkemail:
-        flash("Sorry, User with email address already exists!", "danger")
-        return render_template("public/student_profile.html")
+        # checkuser = mongo.db.sign_up.find_one({"matric_number":mat_no}, {"_id":0})
+        checkuser = mongo.db.signup.find_one({username:{"$exists":True}}, {"_id":0})
+        if not checkuser:
+            flash("Sorry, User not registered!", "danger")
+            return render_template("public/student_profile.html")
+        # checkemail = mongo.db.sign_up.find_one({"email":email}, {"_id":0})
+        checkemail = mongo.db.signup.find_one({new_email:{"$exists":True}}, {"_id":0})
+        if checkemail:
+            flash("Sorry, User with email address already exists!", "danger")
+            return render_template("public/student_profile.html")
     
-    old_email = checkuser["email"]
-    # mongo.db.sign_up.update_one({mat_no:{"$exists":True}}, {"$unset": {"email": old_email,:new_email}})
-    mongo.db.sign_up.update_one({mat_no:{"$exists":True}}, {"$set": {"email": new_email, new_email:new_email}})
-    flash("Profile Updated Successfully!", "success")
-    return redirect(url_for("student-profile"))
+        old_email = checkuser["email"]
+        # mongo.db.sign_up.update_one({mat_no:{"$exists":True}}, {"$unset": {"email": old_email,:new_email}})
+        mongo.db.signup.update_one({username:{"$exists":True}}, {"$set": {"email": new_email}, "$unset": {old_email: ""}})
+        flash("Profile Updated Successfully!", "success")
+        return redirect(url_for("student_profile"))
+    
+    return render_template("public/student_profile.html")
+
+@app.route("/change-password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    if request.method=='POST':
+        req = request.form
+    
+        currentpswd = req["currentpassword"]
+        newpswd = req["newpassword"]
+        renewpswd = req["renewpassword"]
+    
+        # checkuser = mongo.db.sign_up.find_one({"matric_number":mat_no}, {"_id":0})
+        checkpassword = mongo.db.signup.find_one({currentpswd:{"$exists":True}}, {"_id":0})
+        if not checkpassword:
+            flash("Sorry, Incorrect Password", "danger")
+            return render_template("public/student_profile.html")
+        # checkemail = mongo.db.sign_up.find_one({"email":email}, {"_id":0})
+        if newpswd == currentpswd:
+            flash("Sorry, Current password and New password must be different!", "danger")
+            return render_template("public/student_profile.html")
+        if newpswd != renewpswd:
+            flash("New password do not match!", "danger")
+            return render_template("public/student_profile.html")
+        # checkemail = mongo.db.signup.find_one({new_email:{"$exists":True}}, {"_id":0})
+        # if checkemail:
+        #     flash("Sorry, User with email address already exists!", "danger")
+        #     return render_template("public/student_profile.html")
+        
+        old_pswd = checkpassword['password']
+        # mongo.db.sign_up.update_one({mat_no:{"$exists":True}}, {"$unset": {"email": old_email,:new_email}})
+        mongo.db.signup.update_one({currentpswd:{"$exists":True}}, {"$set": {"password": newpswd}, "$unset": {old_pswd: ""}})
+        flash("Password Changed Successfully!", "success")
+        return redirect(url_for("student_profile"))
+    
+    return render_template("public/student_profile.html")
