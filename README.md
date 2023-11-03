@@ -1,1 +1,2 @@
-A system built for computer science and informatics
+# VirtualLibrarySystem
+A system that helps readers find and read their books of choice online
